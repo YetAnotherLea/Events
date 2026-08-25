@@ -1,0 +1,39 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: ["flask", "run", "--host=0.0.0.0"]
+
+networks:
+  app-network:
+    driver: bridge

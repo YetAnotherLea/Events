@@ -1,0 +1,24 @@
+##ENV CONFIG - backend/.env
+#DB_HOST=localhost
+#DB_USER=ton_username
+#DB_PASSWORD=ton_mot_de_passe
+#DB_NAME=nom_de_la_db
+
+# Environnements virtuels
+venv/
+.env
+
+# Fichiers Python compilés
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
+
+# Outils divers
+.idea/
+.vscode/
+serviceAccountKey.json
+

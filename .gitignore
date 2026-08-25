@@ -1,0 +1,62 @@
+##ENV
+.env
+
+#A mettre dans le .env racine
+#DB_USER=votre_utilisateur
+#DB_PASSWORD=votre_mot_de_pass
+#DB_NAME=nom_de_votre_db
+#DB_HOST=host.docker.internal
+#VITE_API_URL=http://{remplacer par adresse ip du wifi} - pour faire fonctionner avec PWA
+
+## Base de données - SQL
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    pseudo VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    avatar_url LONGTEXT DEFAULT 'default_avatar.png',
+    bio TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    firebase_uid VARCHAR(128) UNIQUE NOT NULL,
+    is_custom_avatar BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE events (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    external_id VARCHAR(100) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    location VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    date_start DATETIME NOT NULL,
+    date_end DATETIME,
+    category VARCHAR(100)
+);
+
+CREATE TABLE outings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    event_id INT NOT NULL,
+    organiser_id INT NOT NULL,
+    visibility ENUM('public','private') NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY (organiser_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE participants (
+    outing_id INT NOT NULL,
+    user_id INT NOT NULL,
+    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (outing_id, user_id),
+    FOREIGN KEY (outing_id) REFERENCES outings(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    outing_id INT NOT NULL,
+    user_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (outing_id) REFERENCES outings(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
