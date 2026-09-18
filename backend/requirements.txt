@@ -5,3 +5,4 @@ pymysql
 firebase-admin
 python-dotenv
 cryptography
+gunicorn

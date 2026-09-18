@@ -5,6 +5,8 @@ import SignIn from "../views/SignIn.vue";
 import Register from "../views/Register.vue";
 import Profile from "../views/Profile.vue";
 import EventDetail from "../views/EventDetail.vue";
+import Privacy from "../views/Privacy.vue";
+import DataDeletion from "../views/DataDeletion.vue";
 
 
 const routes = [
@@ -24,6 +26,8 @@ const routes = [
     },
   },
   { path: "/event/:uid", name: "EventDetail", component: EventDetail },
+  { path: "/privacy", component: Privacy },
+  { path: "/data-deletion", component: DataDeletion },
 ];
 
 const router = createRouter({

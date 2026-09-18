@@ -10,6 +10,10 @@
       <button @click="handleSignOut" title="Déconnexion" v-if="isLoggedIn">Déconnexion</button>
     </nav>
     <router-view />
+    <footer>
+      <router-link to="/privacy">Confidentialité</router-link>
+      <router-link to="/data-deletion">Suppression des données</router-link>
+    </footer>
   </div>
 </template>
 
@@ -48,6 +52,20 @@ nav button {
 nav button:hover {
   border: 1px white solid;
   border-radius: 2px;
+}
+
+footer {
+  margin-top: 3rem;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+footer a {
+  color: white;
+  opacity: 0.7;
+  padding: 0 0.5rem;
+  text-decoration: none;
 }
 
 

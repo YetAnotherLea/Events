@@ -11,7 +11,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Initialisation Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate("serviceAccountKey.json")
+    cred = credentials.Certificate(os.getenv("FIREBASE_CREDENTIALS", "serviceAccountKey.json"))
     firebase_admin.initialize_app(cred)
 
 BASE_URL = 'https://public.opendatasoft.com/api/records/1.0/search/'
