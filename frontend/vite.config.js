@@ -13,6 +13,10 @@ export default defineConfig({
         start_url: "/",
         display: "standalone",
       },
+      workbox: {
+        // Le service worker ne doit pas servir index.html à la place du handler OAuth Firebase ni de l'API
+        navigateFallbackDenylist: [/^\/__\//, /^\/api\//],
+      },
       devOptions: {
         enabled: true,
         type: "module",

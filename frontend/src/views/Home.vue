@@ -76,8 +76,7 @@ export default {
   name: "Home",
   setup() {
     const router = useRouter()
-    const host = window.location.hostname
-    const port = 5000
+    const API_URL = import.meta.env.VITE_API_URL
     
     const events = ref([])
     const city = ref('')
@@ -104,7 +103,7 @@ export default {
       try {
         const params = {}
         if (city.value) params.city = city.value
-        const res = await axios.get(`http://${host}:${port}/api/events`, { params })
+        const res = await axios.get(`${API_URL}/api/events`, { params })
         events.value = res.data
         currentPage.value = 1
       } catch (err) {
@@ -120,7 +119,7 @@ export default {
       if (user) {
         try {
           const token = await user.getIdToken()
-          const response = await fetch(`http://${host}:${port}/api/users/me`, {
+          const response = await fetch(`${API_URL}/api/users/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
           if (response.ok) currentUser.value = await response.json()

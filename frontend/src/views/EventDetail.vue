@@ -56,9 +56,7 @@ export default {
       error.value = "";
       try {
         const uid = route.params.uid;
-        const host = window.location.hostname;
-        const port = 5000;
-        const res = await axios.get(`http://${host}:${port}/api/events/${uid}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/${uid}`);
         if (res.data) {
           event.value = res.data;
         } else {
