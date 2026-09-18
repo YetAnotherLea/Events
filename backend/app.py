@@ -4,6 +4,7 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, auth
 import os
+from datetime import date
 from urllib.parse import unquote
 
 app = Flask(__name__)
@@ -30,40 +31,38 @@ def get_current_user_uid(request):
     except:
         return None
 
-# Endpoint événements avec filtrage ville et année
+# Endpoint événements : filtrage ville et année, à venir par défaut, ordre chronologique
 @app.route('/api/events')
 def get_events():
-    city_filter = request.args.get('city', '').strip().lower()
-    year_filter = request.args.get('year', '').strip()  # nouveau paramètre
+    city_filter = request.args.get('city', '').strip()
+    year_filter = request.args.get('year', '').strip()
     rows = int(request.args.get('rows', 100))
     page = int(request.args.get('page', 1))
-    
+
+    # Syntaxe de requête OpenDataSoft v1 ; sort=-champ trie en ordre croissant
+    if year_filter.isdigit() and len(year_filter) == 4:
+        clauses = [f'firstdate_begin>={year_filter}-01-01 AND firstdate_begin<={year_filter}-12-31']
+    else:
+        clauses = [f'firstdate_begin>={date.today().isoformat()}']
+    if city_filter:
+        clauses.append('location_city:"%s"' % city_filter.replace('"', ''))
+
     params = {
         'dataset': DATASET,
         'rows': rows,
-        'start': (page - 1) * rows
+        'start': (page - 1) * rows,
+        'sort': '-firstdate_begin',
+        'q': ' AND '.join(clauses),
     }
 
     try:
-        response = requests.get(BASE_URL, params=params)
+        response = requests.get(BASE_URL, params=params, timeout=10)
         response.raise_for_status()
     except requests.RequestException as e:
         return jsonify({'error': f'Impossible de récupérer les événements: {str(e)}'}), 500
 
     data = response.json()
     events = [record.get('fields', {}) for record in data.get('records', [])]
-
-    # Filtrage par ville
-    if city_filter:
-        events = [e for e in events if city_filter in (e.get('location_city') or '').lower()]
-
-    # Filtrage par année
-    if year_filter:
-        events = [
-            e for e in events
-            if e.get('firstdate_begin') and str(e['firstdate_begin']).startswith(year_filter)
-        ]
-
     return jsonify(events)
 
 # Endpoint pour synchroniser utilisateur Firebase dans la base locale
@@ -231,15 +230,12 @@ def close_db_connection(error):
 @app.route('/api/events/<uid>')
 def get_event(uid):
     try:
-        response = requests.get(BASE_URL, params={'dataset': DATASET, 'rows': 100})
+        response = requests.get(BASE_URL, params={'dataset': DATASET, 'refine.uid': uid}, timeout=10)
         response.raise_for_status()
-        data = response.json()
-        events = [r['fields'] for r in data.get('records', [])]
-        
-        for e in events:
-            if str(e.get('uid')) == str(uid):
-                return jsonify(e)
-        return jsonify({'error': 'Événement introuvable'}), 404
+        records = response.json().get('records', [])
+        if not records:
+            return jsonify({'error': 'Événement introuvable'}), 404
+        return jsonify(records[0]['fields'])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

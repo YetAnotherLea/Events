@@ -209,7 +209,7 @@ Base : `http://localhost:5000`
 
 | Méthode | Route                | Auth | Description                                                     |
 | ------- | -------------------- | :--: | --------------------------------------------------------------- |
-| `GET`   | `/api/events`        |  –   | Liste d'événements, filtrable par `city`, `year`, `rows`, `page` |
+| `GET`   | `/api/events`        |  –   | Événements à venir (ou de l'année `year`), triés par date, filtrables par `city`, paginés (`rows`, `page`) |
 | `GET`   | `/api/events/<uid>`  |  –   | Détail d'un événement par son identifiant OpenAgenda             |
 | `POST`  | `/api/users/sync`    |  –   | Crée ou récupère l'utilisateur local à partir d'un jeton Firebase |
 | `GET`   | `/api/users/me`      |  ✅  | Informations de l'utilisateur connecté                            |
@@ -304,8 +304,7 @@ CREATE TABLE messages (
 
 - **Sorties collectives** : création d'une sortie autour d'un événement, visibilité publique/privée, gestion des participants et messagerie de groupe (tables déjà présentes dans le schéma)
 - Persistance locale des événements consultés (table `events`) plutôt qu'un appel systématique à l'API OpenDataSoft
-- Filtrage et pagination côté serveur pour l'ensemble des critères (aujourd'hui partiellement gérés côté client)
-- Récupération d'un événement par son `uid` sans re-parcourir les 100 premiers enregistrements
+- Filtrage côté serveur pour l'ensemble des critères avancés (aujourd'hui seuls la ville et l'année le sont, le reste est filtré côté client sur la page courante)
 - Externalisation de la configuration Firebase du frontend dans des variables d'environnement
 - Suppression de compte depuis l'interface (aujourd'hui sur demande)
 - Remplacement des `alert()` par des notifications intégrées à l'interface

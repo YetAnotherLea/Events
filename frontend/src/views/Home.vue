@@ -103,6 +103,7 @@ export default {
       try {
         const params = {}
         if (city.value) params.city = city.value
+        if (year.value) params.year = year.value
         const res = await axios.get(`${API_URL}/api/events`, { params })
         events.value = res.data
         currentPage.value = 1
