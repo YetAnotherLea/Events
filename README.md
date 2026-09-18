@@ -12,7 +12,7 @@
   <img loading="lazy" src="https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white"/>
 </p>
 
-🌐 **Démo en ligne : [events.leaballester.com](https://events.leaballester.com)**
+**Démo en ligne : [events.leaballester.com](https://events.leaballester.com)**
 
 **Objectif** : proposer une application web permettant de rechercher des événements publics en France et, à terme, d'organiser des sorties entre utilisateurs autour de ces événements.
 
@@ -35,7 +35,7 @@ L'application est une **PWA installable** : elle est pensée pour être consult�
 
 ---
 
-## 🧰 Prérequis
+## Prérequis
 
 - [Docker](https://www.docker.com/) et Docker Compose
 - Un serveur **MySQL** accessible depuis les conteneurs (installation locale, XAMPP/MAMP, ou conteneur dédié)
@@ -44,7 +44,7 @@ L'application est une **PWA installable** : elle est pensée pour être consult�
 
 ---
 
-## 🔧 Installation
+## Installation
 
 ### 1. Cloner le dépôt
 
@@ -88,11 +88,11 @@ Créez la base puis exécutez le schéma SQL décrit dans la section [Base de do
   OAuth de Firebase, une politique de confidentialité (`/privacy`) et une page de suppression des
   données (`/data-deletion`) — ces deux pages font partie du front.
 
-> ⚠️ `serviceAccountKey.json` est une clé privée : ne la versionnez pas. Pensez à l'ajouter au `.gitignore`.
+> `serviceAccountKey.json` est une clé privée : ne la versionnez pas. Pensez à l'ajouter au `.gitignore`.
 
 ---
 
-## 🚀 Démarrage
+## Démarrage
 
 L'ensemble du projet se lance avec Docker Compose :
 
@@ -133,7 +133,7 @@ npm run dev
 
 ---
 
-## 🗂️ Architecture
+## Architecture
 
 ```
 .
@@ -169,7 +169,7 @@ npm run dev
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 ### Recherche d'événements
 
@@ -201,7 +201,7 @@ Application installable sur mobile et desktop (`vite-plugin-pwa`, mise à jour a
 
 ---
 
-## 🔌 API
+## API
 
 Base : `http://localhost:5000`
 
@@ -218,7 +218,7 @@ Les routes marquées ✅ attendent un en-tête `Authorization: Bearer <idToken F
 
 ---
 
-## 🗄️ Base de données
+## Base de données
 
 ```sql
 CREATE TABLE users (
@@ -278,7 +278,7 @@ CREATE TABLE messages (
 
 ---
 
-## 🧱 Stack technique
+## Stack technique
 
 | Technologie          | Version    | Usage                                       |
 | -------------------- | ---------- | ------------------------------------------- |
@@ -298,7 +298,7 @@ CREATE TABLE messages (
 
 ---
 
-## 🚧 Pistes d'amélioration
+## Pistes d'amélioration
 
 - **Sorties collectives** : création d'une sortie autour d'un événement, visibilité publique/privée, gestion des participants et messagerie de groupe (tables déjà présentes dans le schéma)
 - Persistance locale des événements consultés (table `events`) plutôt qu'un appel systématique à l'API OpenDataSoft
@@ -311,7 +311,7 @@ CREATE TABLE messages (
 
 ---
 
-## 👥 Auteurs
+## Auteurs
 
 - Léa Ballester
 - Islem Badaoui
