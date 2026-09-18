@@ -1,8 +1,6 @@
 # Events
 
-<p align="center">
-  <img src="./frontend/src/assets/logos/eventalis.png" alt="Eventalis" width="120"/>
-</p>
+![screenshot](./docs/screenshot.png)
 
 <p align="center">
   <img loading="lazy" src="https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vuedotjs&logoColor=white"/>
