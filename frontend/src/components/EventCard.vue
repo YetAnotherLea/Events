@@ -28,6 +28,7 @@
 
 <script setup>
 import { computed } from "vue";
+import { sanitizeHtml } from "../utils/sanitize";
 
 const props = defineProps({
   event: Object
@@ -37,11 +38,12 @@ const props = defineProps({
 const formatDescription = (text) => {
   if (!text) return '';
   
-  return text
-    .replace(/\n/g, '<br>')
-    
-    .replace(/•\s*(.+)/g, '<li>$1</li>')
-    .replace(/(<li>.+<\/li>)/g, '<ul>$1</ul>');
+  return sanitizeHtml(
+    text
+      .replace(/\n/g, '<br>')
+      .replace(/•\s*(.+)/g, '<li>$1</li>')
+      .replace(/(<li>.+<\/li>)/g, '<ul>$1</ul>')
+  );
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
     <div class="register-container">
         <h3>Inscription</h3>
-        <p><input type="text" placeholder="Pseudo" v-model="pseudo" /></p>
+        <p><input type="text" placeholder="Pseudo" v-model="pseudo" maxlength="50" /></p>
         <p><input type="text" placeholder="Email" v-model="email" /></p>
         <p><input type="password" placeholder="Mot de passe" v-model="password" /></p>
         <p v-if="errMsg" style="color: red;">{{ errMsg }}</p>

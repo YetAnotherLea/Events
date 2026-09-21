@@ -4,11 +4,13 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, auth
 import os
+import re
 from datetime import date
 from urllib.parse import unquote
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+# En prod le front est servi sur la même origine : CORS ne sert qu'en développement
+CORS(app, resources={r"/api/*": {"origins": os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")}})
 
 # Initialisation Firebase
 if not firebase_admin._apps:
@@ -17,6 +19,14 @@ if not firebase_admin._apps:
 
 BASE_URL = 'https://public.opendatasoft.com/api/records/1.0/search/'
 DATASET = 'evenements-publics-openagenda'
+
+MAX_ROWS = 100
+PSEUDO_RE = re.compile(r'^[\w.-]{1,50}$')
+PSEUDOS_RESERVES = {'me', 'sync'}
+MAX_BIO = 1000
+# Avatar en data URL base64 ; ~1 Mo décodé, borne aussi par client_max_body_size côté nginx
+MAX_AVATAR = 1_400_000
+AVATAR_RE = re.compile(r'^data:image/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$')
 
 # Fonction pour récupérer l'utilisateur courant via Firebase
 def get_current_user_uid(request):
@@ -36,8 +46,11 @@ def get_current_user_uid(request):
 def get_events():
     city_filter = request.args.get('city', '').strip()
     year_filter = request.args.get('year', '').strip()
-    rows = int(request.args.get('rows', 100))
-    page = int(request.args.get('page', 1))
+    try:
+        rows = min(max(int(request.args.get('rows', MAX_ROWS)), 1), MAX_ROWS)
+        page = max(int(request.args.get('page', 1)), 1)
+    except ValueError:
+        return jsonify({'error': 'Paramètres rows et page invalides'}), 400
 
     # Syntaxe de requête OpenDataSoft v1 ; sort=-champ trie en ordre croissant
     if year_filter.isdigit() and len(year_filter) == 4:
@@ -68,11 +81,18 @@ def get_events():
 # Endpoint pour synchroniser utilisateur Firebase dans la base locale
 @app.route("/api/users/sync", methods=["POST"])
 def sync_user():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     id_token = data.get("idToken")
-    proposed_pseudo = data.get("pseudo", "")
-    
-    decoded = auth.verify_id_token(id_token)
+    proposed_pseudo = str(data.get("pseudo") or "").strip()
+
+    if not id_token:
+        return jsonify({"error": "idToken manquant"}), 400
+    if proposed_pseudo and (not PSEUDO_RE.match(proposed_pseudo) or proposed_pseudo.lower() in PSEUDOS_RESERVES):
+        return jsonify({"error": "Pseudo invalide", "code": "PSEUDO_INVALID"}), 400
+    try:
+        decoded = auth.verify_id_token(id_token)
+    except Exception:
+        return jsonify({"error": "Jeton invalide"}), 401
     uid = decoded["uid"]
     email = decoded.get("email", "")
     name = decoded.get("name", "")
@@ -86,7 +106,8 @@ def sync_user():
     user = cursor.fetchone()
 
     if not user:
-        pseudo_to_use = proposed_pseudo or name or (email.split('@')[0] if email else "user")
+        # Pseudo déduit du profil Google/Facebook : borné pour laisser la place au suffixe numérique
+        pseudo_to_use = proposed_pseudo or (name or (email.split('@')[0] if email else "user"))[:45]
 
         cursor.execute("SELECT COUNT(*) as count FROM users WHERE pseudo = %s", (pseudo_to_use,))
         result = cursor.fetchone()
@@ -206,9 +227,19 @@ def update_user_profile(pseudo):
         cursor.close()
         return jsonify({"error": "Vous ne pouvez modifier que votre propre profil"}), 403
 
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     bio = data.get('bio', user.get('bio', ''))
     avatar_url = data.get('avatar_url', user.get('avatar_url', ''))
+
+    if not isinstance(bio, str) or len(bio) > MAX_BIO:
+        cursor.close()
+        return jsonify({"error": f"Bio trop longue ({MAX_BIO} caractères max)"}), 400
+    if not isinstance(avatar_url, str) or len(avatar_url) > MAX_AVATAR:
+        cursor.close()
+        return jsonify({"error": "Avatar trop volumineux (1 Mo max)"}), 400
+    if avatar_url and avatar_url != 'default_avatar.png' and not AVATAR_RE.match(avatar_url):
+        cursor.close()
+        return jsonify({"error": "Format d'avatar invalide"}), 400
 
     cursor.execute("""
         UPDATE users 
@@ -236,8 +267,9 @@ def get_event(uid):
         if not records:
             return jsonify({'error': 'Événement introuvable'}), 404
         return jsonify(records[0]['fields'])
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        app.logger.exception("Récupération de l'événement %s", uid)
+        return jsonify({'error': "Impossible de récupérer l'événement"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -42,6 +42,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { sanitizeHtml } from "../utils/sanitize";
 
 export default {
   name: "EventDetail",
@@ -75,9 +76,11 @@ export default {
     
     const formatLongDescription = (text) => {
       if (!text) return "";
-      return text
-        .replace(/\r\n|\r|\n/g, "<br>")
-        .replace(/TRALALA\s+LOVERS/g, "TRALALA LOVERS"); 
+      return sanitizeHtml(
+        text
+          .replace(/\r\n|\r|\n/g, "<br>")
+          .replace(/TRALALA\s+LOVERS/g, "TRALALA LOVERS")
+      );
     };
 
     return { event, loading, error, formatLongDescription };
