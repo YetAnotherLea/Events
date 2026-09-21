@@ -205,14 +205,14 @@ Application installable sur mobile et desktop (`vite-plugin-pwa`, mise à jour a
 
 Base : `http://localhost:5000`
 
-| Méthode | Route                | Auth | Description                                                     |
-| ------- | -------------------- | :--: | --------------------------------------------------------------- |
-| `GET`   | `/api/events`        |  –   | Événements à venir (ou de l'année `year`), triés par date, filtrables par `city`, paginés (`rows`, `page`) |
-| `GET`   | `/api/events/<uid>`  |  –   | Détail d'un événement par son identifiant OpenAgenda             |
-| `POST`  | `/api/users/sync`    |  –   | Crée ou récupère l'utilisateur local à partir d'un jeton Firebase |
-| `GET`   | `/api/users/me`      |  ✅  | Informations de l'utilisateur connecté                            |
-| `GET`   | `/api/users/<pseudo>`|  ✅  | Profil public d'un utilisateur                                   |
-| `PUT`   | `/api/users/<pseudo>`|  ✅  | Mise à jour de sa bio et de son avatar                           |
+| Méthode | Route                 | Auth | Description                                                                                                |
+| ------- | --------------------- | :--: | ---------------------------------------------------------------------------------------------------------- |
+| `GET`   | `/api/events`         |  –   | Événements à venir (ou de l'année `year`), triés par date, filtrables par `city`, paginés (`rows`, `page`) |
+| `GET`   | `/api/events/<uid>`   |  –   | Détail d'un événement par son identifiant OpenAgenda                                                       |
+| `POST`  | `/api/users/sync`     |  –   | Crée ou récupère l'utilisateur local à partir d'un jeton Firebase                                          |
+| `GET`   | `/api/users/me`       |  ✅  | Informations de l'utilisateur connecté                                                                     |
+| `GET`   | `/api/users/<pseudo>` |  ✅  | Profil public d'un utilisateur                                                                             |
+| `PUT`   | `/api/users/<pseudo>` |  ✅  | Mise à jour de sa bio et de son avatar                                                                     |
 
 Les routes marquées ✅ attendent un en-tête `Authorization: Bearer <idToken Firebase>`.
 
@@ -280,21 +280,21 @@ CREATE TABLE messages (
 
 ## Stack technique
 
-| Technologie          | Version    | Usage                                       |
-| -------------------- | ---------- | ------------------------------------------- |
-| Vue                  | 3.5        | Framework UI                                |
-| Vite                 | 7.1        | Build tool & serveur de développement       |
-| Vue Router           | 4.5        | Routing client et garde d'authentification  |
-| Axios                | 1.11       | Appels HTTP vers l'API                      |
-| vite-plugin-pwa      | 1.0        | Service worker et manifest PWA              |
-| Firebase (JS SDK)    | 12.2       | Authentification côté client                |
-| Flask                | Python 3.12| API REST                                    |
-| Flask-CORS           | –          | Autorisation des requêtes cross-origin      |
-| firebase-admin       | –          | Vérification des jetons côté serveur        |
-| gunicorn             | –          | Serveur WSGI en production                  |
-| PyMySQL              | –          | Accès à la base MySQL                       |
-| MySQL                | 8.0        | Persistance des utilisateurs                |
-| Docker Compose       | –          | Orchestration des services                  |
+| Technologie       | Version     | Usage                                      |
+| ----------------- | ----------- | ------------------------------------------ |
+| Vue               | 3.5         | Framework UI                               |
+| Vite              | 7.1         | Build tool & serveur de développement      |
+| Vue Router        | 4.5         | Routing client et garde d'authentification |
+| Axios             | 1.11        | Appels HTTP vers l'API                     |
+| vite-plugin-pwa   | 1.0         | Service worker et manifest PWA             |
+| Firebase (JS SDK) | 12.2        | Authentification côté client               |
+| Flask             | Python 3.12 | API REST                                   |
+| Flask-CORS        | –           | Autorisation des requêtes cross-origin     |
+| firebase-admin    | –           | Vérification des jetons côté serveur       |
+| gunicorn          | –           | Serveur WSGI en production                 |
+| PyMySQL           | –           | Accès à la base MySQL                      |
+| MySQL             | 8.0         | Persistance des utilisateurs               |
+| Docker Compose    | –           | Orchestration des services                 |
 
 ---
 
